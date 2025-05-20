@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cabin Crew Meal Split Calculator</title>
+  <!-- Bootstrap 5 CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      padding: 1rem;
+      background: #fff;
+      color: #212529;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .starter-cell {
+      background-color: #d0e7ff;
+      color: #0d6efd;
+      font-weight: 600;
+    }
+    .main-cell {
+      background-color: #ffe5cc;
+      color: #fd7e14;
+      font-weight: 600;
+    }
+    .busiest {
+      background-color: #d1e7dd !important; /* Bootstrap's success light */
+    }
+    .tooltip-inner {
+      max-width: 250px;
+      text-align: left;
+    }
+    .progress {
+      height: 12px;
+      margin-top: 0.25rem;
+      margin-bottom: 0.5rem;
+    }
+    .btn-sm {
+      min-width: 2.5rem;
+      padding: 0.15rem 0.5rem;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .input-group-text {
+      cursor: pointer;
+      user-select: none;
+    }
+    @media (max-width: 575.98px) {
+      .table-responsive {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <h1 class="mb-4 text-primary">Cabin Crew Meal Split Calculator</h1>
+
+    <div class="mb-3">
+      <label for="aircraft" class="form-label fw-semibold">Select Aircraft:</label>
+      <select id="aircraft" class="form-select" aria-describedby="aircraftHelp">
+        <option value="">-- Select --</option>
+        <optgroup label="Airbus A380">
+          <option value="38A_Main">38A (Main)</option>
+          <option value="38A_Upper">38A (Upper)</option>
+        </optgroup>
+        <optgroup label="Boeing 777">
+          <option value="77H">77H</option>
+          <option value="77L">77L</option>
+          <option value="77M">77M</option>
+        </optgroup>
+        <optgroup label="Boeing 787">
+          <option value="78B">78B</option>
+          <option value="78E">78E</option>
+          <option value="789">789</option>
+          <option value="781">781</option>
+        </optgroup>
+      </select>
+      <div id="aircraftHelp" class="form-text">Select aircraft to load positions and seats.</div>
+    </div>
+
+    <div id="positionsContainer" class="mb-4"></div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white fw-bold">Total Starters</div>
+          <div class="card-body d-flex flex-wrap gap-3 justify-content-center" id="startersInputs">
+            <div class="input-group input-group-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Total number of Starter 1 meals available">
+              <span class="input-group-text">1</span>
+              <button class="btn btn-outline-secondary btn-sm decrement" type="button">-</button>
+              <input type="number" id="totalStarter1" class="form-control text-center" min="0" value="0" aria-label="Starter 1 total" />
+              <button class="btn btn-outline-secondary btn-sm increment" type="button">+</button>
+            </div>
+            <div class="input-group input-group-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Total number of Starter 2 meals available">
+              <span class="input-group-text">2</span>
+              <button class="btn btn-outline-secondary btn-sm decrement" type="button">-</button>
+              <input type="number" id="totalStarter2" class="form-control text-center" min="0" value="0" aria-label="Starter 2 total" />
+              <button class="btn btn-outline-secondary btn-sm increment" type="button">+</button>
+            </div>
+            <div class="input-group input-group-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Total number of Starter 3 meals available">
+              <span class="input-group-text">3</span>
+              <button class="btn btn-outline-secondary btn-sm decrement" type="button">-</button>
+              <input type="number" id="totalStarter3" class="form-control text-center" min="0" value="0" aria-label="Starter 3 total" />
+              <button class="btn btn-outline-secondary btn-sm increment" type="button">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-warning text-dark fw-bold">Total Mains</div>
+          <div class="card-body d-flex flex-wrap gap-3 justify-content-center" id="mainsInputs">
+            <div class="input-group input-group-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Total number of Main 1 meals available">
+              <span class="input-group-text">1</span>
+              <button class="btn btn-outline-secondary btn-sm decrement" type="button">-</button>
+              <input type="number" id="totalMain1" class="form-control text-center" min="0" value="0" aria-label="Main 1 total" />
+              <button class="btn btn-outline-secondary btn-sm increment" type="button">+</button>
+            </div>
+            <div class="input-group input-group-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Total number of Main 2 meals available">
+              <span class="input-group-text">2</span>
+              <button class="btn btn-outline-secondary btn-sm decrement" type="button">-</button>
+              <input type="number" id="totalMain2" class="form-control text-center" min="0" value="0" aria-label="Main 2 total" />
+              <button class="btn btn-outline-secondary btn-sm increment" type="button">+</button>
+            </div>
+            <div class="input-group input-group-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Total number of Main 3 meals available">
+              <span class="input-group-text">3</span>
+              <button class="btn btn-outline-secondary btn-sm decrement" type="button">-</button>
+              <input type="number" id="totalMain3" class="form-control text-center" min="0" value="0" aria-label="Main 3 total" />
+              <button class="btn btn-outline-secondary btn-sm increment" type="button">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="calculateBtn" class="btn btn-success btn-lg w-100 mb-4">Calculate Meal Split</button>
+
+    <div id="resultsContainer" class="table-responsive"></div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (() => {
+      // Data for aircraft and positions (positions without "CC")
+      const AIRCRAFTS = {
+        "38A_Main": { positions: { "1": 8, "21": 8, "3": 14, "8": 14 } },
+        "38A_Upper": { positions: { "11": 13, "15": 12, "12": 14, "22": 14 } },
+        "77H": { positions: { "1": 12, "13": 16, "3": 16, "4": 16, "9": 16 } },
+        "77L": { positions: { "2": 14, "6": 14, "1": 10, "9": 10 } },
+        "77M": { positions: { "1": 10, "11": 11, "10": 14, "6": 14 } },
+        "78B": { positions: { "1": 10, "5": 11, "2": 14 } },
+        "78E": { positions: { "1": 16, "2": 15 } },
+        "789": { positions: { "1": 14, "2": 14, "10": 14 } },
+        "781": { positions: { "11": 13, "2": 13, "1": 11, "10": 11 } },
+      };
+
+      // Globals
+      const aircraftSelect = document.getElementById("aircraft");
+      const positionsContainer = document.getElementById("positionsContainer");
+      const resultsContainer = document.getElementById("resultsContainer");
+
+      // Initialize tooltips
+      const tooltipTriggerList = [];
+
+      // Create input row for positions with seats, empty seats, SPMLs
+      function renderPositionsInputs(positions) {
+        positionsContainer.innerHTML = "";
+        const card = document.createElement("div");
+        card.className = "card shadow-sm mb-4";
+
+        const cardBody = document.createElement("div");
+        cardBody.className = "card-body";
+
+        // Title row
+        const headerRow = document.createElement("div");
+        headerRow.className = "row fw-bold mb-2";
+
+        ["Position", "Active Seats", "Empty Seats", "Special Meals (SPML)"].forEach((text, i) => {
+          const col = document.createElement("div");
+          col.className = "col";
+          col.textContent = text;
+          if (i === 0) col.style.maxWidth = "80px";
+          headerRow.appendChild(col);
+        });
+
+        cardBody.appendChild(headerRow);
+
+        // Position rows
+        Object.entries(positions).forEach(([pos, seats]) => {
+          const row = document.createElement("div");
+          row.className = "row align-items-center mb-1";
+
+          // Position label
+          const posCol = document.createElement("div");
+          posCol.className = "col fw-semibold";
+          posCol.style.maxWidth = "80px";
+          posCol.textContent = pos;
+          row.appendChild(posCol);
+
+          // Active seats (readonly)
+          const activeCol = document.createElement("div");
+          activeCol.className = "col";
+          const activeInput = document.createElement("input");
+          activeInput.type = "number";
+          activeInput.className = "form-control form-control-sm";
+          activeInput.value = seats;
+          activeInput.min = 0;
+          activeInput.readOnly = true;
+          activeInput.setAttribute("aria-label", `Active seats for position ${pos}`);
+          activeCol.appendChild(activeInput);
+          row.appendChild(activeCol);
+
+          // Empty seats (editable)
+          const emptyCol = document.createElement("div");
+          emptyCol.className = "col";
+          const emptyInput = document.createElement("input");
+          emptyInput.type = "number";
+          emptyInput.className = "form-control form-control-sm empty-seats";
+          emptyInput.min = 0;
+          emptyInput.value = 0;
+          emptyInput.setAttribute("aria-label", `Empty seats for position ${pos}`);
+          emptyCol.appendChild(emptyInput);
+          row.appendChild(emptyCol);
+
+          // SPML input
+          const spmlCol = document.createElement("div");
+          spmlCol.className = "col";
+          const spmlInput = document.createElement("input");
+          spmlInput.type = "number";
+          spmlInput.className = "form-control form-control-sm spml-seats";
+          spmlInput.min = 0;
+          spmlInput.value = 0;
+          spmlInput.setAttribute("aria-label", `SPML meals for position ${pos}`);
+          spmlCol.appendChild(spmlInput);
+          row.appendChild(spmlCol);
+
+          cardBody.appendChild(row);
+        });
+
+        card.appendChild(cardBody);
+        positionsContainer.appendChild(card);
+      }
+
+      // Helper: increment/decrement buttons for total meals
+      function setupIncrementDecrement(containerId) {
+        const container = document.getElementById(containerId);
+        container.querySelectorAll(".increment").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const input = btn.previousElementSibling;
+            input.value = Math.max(0, Number(input.value) + 1);
+          });
+        });
+        container.querySelectorAll(".decrement").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const input = btn.nextElementSibling;
+            input.value = Math.max(0, Number(input.value) - 1);
+          });
+        });
+      }
+
+      // Get total meal inputs
+      function getTotalMeals() {
+        return {
+          starters: [
+            Number(document.getElementById("totalStarter1").value),
+            Number(document.getElementById("totalStarter2").value),
+            Number(document.getElementById("totalStarter3").value),
+          ],
+          mains: [
+            Number(document.getElementById("totalMain1").value),
+            Number(document.getElementById("totalMain2").value),
+            Number(document.getElementById("totalMain3").value),
+          ],
+        };
+      }
+
+      // Meal splitting logic with validation and leftover fair distribution
+      function splitMeals(positions, totalMeals, empties, spmls) {
+        const posKeys = Object.keys(positions);
+        const seatCounts = posKeys.map((pos) => positions[pos]);
+        const emptySeats = posKeys.map((pos) => empties[pos] || 0);
+        const spmlCounts = posKeys.map((pos) => spmls[pos] || 0);
+
+        // Calculate active seats = activeSeats - empties - spmls (spml excluded from regular meals)
+        const activeSeats = seatCounts.map((count, i) => count - emptySeats[i] - spmlCounts[i]);
+
+        // Validate no negative active seats
+        for (let i = 0; i < activeSeats.length; i++) {
+          if (activeSeats[i] < 0) {
+            alert(`Error: Empty + SPML seats exceed active seats for position ${posKeys[i]}.`);
+            return null;
+          }
+        }
+
+        // Helper to distribute total meals of 3 types across positions proportional to active seats
+        function distribute(totalArray) {
+          const totalSeats = activeSeats.reduce((a, b) => a + b, 0);
+          if (totalSeats === 0) return posKeys.map(() => [0, 0, 0]);
+          let allocations = posKeys.map(() => [0, 0, 0]);
+
+          // Start by allocating floor shares proportional to active seats
+          for (let m = 0; m < 3; m++) {
+            let total = totalArray[m];
+            let floats = posKeys.map((_, i) => (activeSeats[i] / totalSeats) * total);
+            let floorVals = floats.map(Math.floor);
+            let sumFloor = floorVals.reduce((a, b) => a + b, 0);
+            let remainder = total - sumFloor;
+
+            // Assign floors first
+            for (let i = 0; i < posKeys.length; i++) {
+              allocations[i][m] = floorVals[i];
+            }
+
+            // Distribute remainder by largest fractional part
+            let fractionalParts = floats.map((v, i) => v - floorVals[i]);
+            while (remainder > 0) {
+              let maxIndex = fractionalParts.indexOf(Math.max(...fractionalParts));
+              allocations[maxIndex][m]++;
+              fractionalParts[maxIndex] = 0; // zero out to avoid re-assign
+              remainder--;
+            }
+          }
+          return allocations;
+        }
+
+        // Distribute starters and mains
+        let startersAlloc = distribute(totalMeals.starters);
+        let mainsAlloc = distribute(totalMeals.mains);
+
+        // Validation: check if any position has less meals than active seats
+        let alerts = [];
+        for (let i = 0; i < posKeys.length; i++) {
+          let starterSum = startersAlloc[i].reduce((a, b) => a + b, 0);
+          let mainSum = mainsAlloc[i].reduce((a, b) => a + b, 0);
+          if (starterSum < activeSeats[i]) {
+            alerts.push(`Position ${posKeys[i]} does not have enough starters (${starterSum}/${activeSeats[i]}).`);
+          }
+          if (mainSum < activeSeats[i]) {
+            alerts.push(`Position ${posKeys[i]} does not have enough mains (${mainSum}/${activeSeats[i]}).`);
+          }
+        }
+
+        return {
+          starters: startersAlloc,
+          mains: mainsAlloc,
+          alerts,
+          activeSeats,
+          posKeys,
+          seatCounts,
+          emptySeats,
+          spmlCounts,
+        };
+      }
+
+      // Render results table with color coding and progress bars
+      function renderResults(data) {
+        if (!data) {
+          resultsContainer.innerHTML = "";
+          return;
+        }
+
+        const {
+          starters,
+          mains,
+          alerts,
+          activeSeats,
+          posKeys,
+          seatCounts,
+          emptySeats,
+          spmlCounts,
+        } = data;
+
+        let html = "";
+
+        if (alerts.length) {
+          html += `<div class="alert alert-danger" role="alert"><strong>Warning:</strong><ul>${alerts
+            .map((a) => `<li>${a}</li>`)
+            .join("")}</ul></div>`;
+        }
+
+        html += `<table class="table table-bordered table-sm align-middle text-center">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Position</th>
+              <th scope="col" title="Active Seats">Seats</th>
+              <th scope="col" title="Empty Seats">Empty</th>
+              <th scope="col" title="Special Meals (SPML)">SPML</th>
+              <th scope="col" class="starter-cell">Starter 1</th>
+              <th scope="col" class="starter-cell">Starter 2</th>
+              <th scope="col" class="starter-cell">Starter 3</th>
+              <th scope="col" class="main-cell">Main 1</th>
+              <th scope="col" class="main-cell">Main 2</th>
+              <th scope="col" class="main-cell">Main 3</th>
+              <th scope="col" title="Starters Allocated / Active Seats">Starter %</th>
+              <th scope="col" title="Mains Allocated / Active Seats">Main %</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+        // Determine busiest position (most active seats)
+        const maxActive = Math.max(...activeSeats);
+
+        posKeys.forEach((pos, i) => {
+          const starterSum = starters[i].reduce((a, b) => a + b, 0);
+          const mainSum = mains[i].reduce((a, b) => a + b, 0);
+
+          const starterPercent = activeSeats[i] ? Math.round((starterSum / activeSeats[i]) * 100) : 0;
+          const mainPercent = activeSeats[i] ? Math.round((mainSum / activeSeats[i]) * 100) : 0;
+
+          html += `<tr${activeSeats[i] === maxActive ? " class='busiest'" : ""}>
+            <td class="fw-semibold">${pos}</td>
+            <td>${seatCounts[i]}</td>
+            <td>${emptySeats[i]}</td>
+            <td>${spmlCounts[i]}</td>
+            <td class="starter-cell">${starters[i][0]}</td>
+            <td class="starter-cell">${starters[i][1]}</td>
+            <td class="starter-cell">${starters[i][2]}</td>
+            <td class="main-cell">${mains[i][0]}</td>
+            <td class="main-cell">${mains[i][1]}</td>
+            <td class="main-cell">${mains[i][2]}</td>
+            <td style="min-width:90px;">
+              <div class="progress" role="progressbar" aria-label="Starter allocation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${starterPercent}">
+                <div class="progress-bar bg-primary" style="width: ${starterPercent}%;"></div>
+              </div>
+              <small>${starterPercent}%</small>
+            </td>
+            <td style="min-width:90px;">
+              <div class="progress" role="progressbar" aria-label="Main allocation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${mainPercent}">
+                <div class="progress-bar bg-warning" style="width: ${mainPercent}%;"></div>
+              </div>
+              <small>${mainPercent}%</small>
+            </td>
+          </tr>`;
+        });
+
+        html += "</tbody></table>";
+
+        resultsContainer.innerHTML = html;
+      }
+
+      // Get empties and spmls from inputs
+      function getEmptyAndSPML() {
+        const empties = {};
+        const spmls = {};
+        document.querySelectorAll(".row.align-items-center").forEach((row) => {
+          const pos = row.querySelector(".fw-semibold").textContent.trim();
+          const emptyVal = row.querySelector(".empty-seats").value;
+          const spmlVal = row.querySelector(".spml-seats").value;
+          empties[pos] = Math.max(0, Number(emptyVal));
+          spmls[pos] = Math.max(0, Number(spmlVal));
+        });
+        return { empties, spmls };
+      }
+
+      // Event listeners
+      aircraftSelect.addEventListener("change", () => {
+        const val = aircraftSelect.value;
+        if (val && AIRCRAFTS[val]) {
+          renderPositionsInputs(AIRCRAFTS[val].positions);
+          resultsContainer.innerHTML = "";
+        } else {
+          positionsContainer.innerHTML = "";
+          resultsContainer.innerHTML = "";
+        }
+      });
+
+      document.getElementById("calculateBtn").addEventListener("click", () => {
+        const val = aircraftSelect.value;
+        if (!val || !AIRCRAFTS[val]) {
+          alert("Please select a valid aircraft.");
+          return;
+        }
+        const positions = AIRCRAFTS[val].positions;
+        const totalMeals = getTotalMeals();
+        const { empties, spmls } = getEmptyAndSPML();
+
+        // Check totals entered (simple validation)
+        const totalStarters = totalMeals.starters.reduce((a, b) => a + b, 0);
+        const totalMains = totalMeals.mains.reduce((a, b) => a + b, 0);
+        if (totalStarters === 0 && totalMains === 0) {
+          alert("Please enter at least one starter or main meal total.");
+          return;
+        }
+
+        const splitData = splitMeals(positions, totalMeals, empties, spmls);
+        renderResults(splitData);
+      });
+
+      // Setup increments/decrements on load
+      setupIncrementDecrement("startersInputs");
+      setupIncrementDecrement("mainsInputs");
+
+      // Initialize bootstrap tooltips
+      document.querySelectorAll("[data-bs-toggle='tooltip']").forEach((el) => {
+        new bootstrap.Tooltip(el);
+      });
+    })();
+  </script>
+</body>
+</html>
