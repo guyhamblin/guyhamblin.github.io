@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cabin Crew Meal Split Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fa;
+    margin: 0; padding: 20px;
+    color: #222;
+  }
+  h1 {
+    text-align: center;
+    color: #1e2a78;
+    margin-bottom: 1rem;
+  }
+  select, input[type=number] {
+    padding: 8px 10px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+  select:focus, input[type=number]:focus {
+    outline: none;
+    border-color: #1e2a78;
+    box-shadow: 0 0 5px rgba(30,42,120,0.3);
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    display: block;
+    color: #1e2a78;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgb(0 0 0 / 0.1);
+  }
+  .sections-container {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
+    margin-top: 20px;
+  }
+  .section-card {
+    background: #e0e6ff;
+    border-radius: 10px;
+    padding: 18px 16px;
+    box-shadow: 0 4px 12px rgb(30 42 120 / 0.12);
+    display: flex;
+    flex-direction: column;
+  }
+  .section-header {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+    color: #1e2a78;
+  }
+  .input-group {
+    margin-bottom: 10px;
+  }
+  .input-group small {
+    color: #555;
+    font-size: 0.85rem;
+  }
+  .summary {
+    margin-top: 25px;
+    background: #dbe8ff;
+    padding: 16px;
+    border-radius: 8px;
+    color: #1e2a78;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: inset 0 0 10px rgb(30 42 120 / 0.15);
+  }
+  button {
+    background: #1e2a78;
+    color: white;
+    padding: 12px 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
+    font-size: 1.1rem;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #16215a;
+  }
+  .meal-inputs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .meal-inputs label {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  @media(max-width: 480px) {
+    .sections-container {
+      grid-template-columns: 1fr;
+    }
+    .meal-inputs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Cabin Crew Meal Split Calculator</h1>
+  <div class="container">
+    <label for="aircraft">Select  Aircraft Type</label>
+<select id="aircraft">
+  <option value="">-- Choose Aircraft --</option>
+
+  <optgroup label="Airbus A380">
+    <option value="38A_main">A380 Main Deck</option>
+    <option value="38A_upper">A380 Upper Deck</option>
+  </optgroup>
+
+  <optgroup label="Boeing 777">
+    <option value="77H">Boeing 777-200 (77H)</option>
+    <option value="77L">Boeing 777-200 (77L)</option>
+    <option value="77M">Boeing 777-300 (77M)</option>
+  </optgroup>
+
+  <optgroup label="Boeing 787 Dreamliner">
+    <option value="78B">Boeing 787-8 (78B)</option>
+    <option value="78E">Boeing 787-8 (78E)</option>
+    <option value="789">Boeing 787-9 (789)</option>
+    <option value="781">Boeing 787-10 (781)</option>
+  </optgroup>
+</select>
+
+
+    <div id="sections" class="sections-container"></div>
+
+    <div style="margin-top: 25px;">
+      <label>Total Starters Catered</label>
+      <div class="meal-inputs">
+        <div>
+          <label for="starter1">Starter Option 1</label>
+          <input type="number" id="starter1" min="0" placeholder="0" />
+        </div>
+        <div>
+          <label for="starter2">Starter Option 2</label>
+          <input type="number" id="starter2" min="0" placeholder="0" />
+        </div>
+        <div>
+          <label for="starter3">Starter Option 3</label>
+          <input type="number" id="starter3" min="0" placeholder="0" />
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 15px;">
+      <label>Total Mains Catered</label>
+      <div class="meal-inputs">
+        <div>
+          <label for="main1">Main Option 1</label>
+          <input type="number" id="main1" min="0" placeholder="0" />
+        </div>
+        <div>
+          <label for="main2">Main Option 2</label>
+          <input type="number" id="main2" min="0" placeholder="0" />
+        </div>
+        <div>
+          <label for="main3">Main Option 3</label>
+          <input type="number" id="main3" min="0" placeholder="0" />
+        </div>
+      </div>
+    </div>
+
+    <button id="calculateBtn">Calculate Meal Distribution</button>
+
+    <div id="result" class="summary" style="display:none;"></div>
+  </div>
+
+<script>
+  // Aircraft data remains keyed by CC but will be renamed when displayed
+  const aircraftData = {
+    '38A_main': { CC1:8, CC21:8, CC3:14, CC8:14 },
+    '38A_upper': { CC11:13, CC15:12, CC12:14, CC22:14 },
+    '77H': { CC1:12, CC13:16, CC3:16, CC4:16, CC9:16 },
+    '77L': { CC2:14, CC6:14, CC1:10, CC9:10 },
+    '77M': { CC1:10, CC11:11, CC10:14, CC6:14 },
+    '78B': { CC1:10, CC5:11, CC2:14 },
+    '78E': { CC1:16, CC2:15 },
+    '789': { CC1:14, CC2:14, CC10:14 },
+    '781': { CC11:13, CC2:13, CC1:11, CC10:11 }
+  };
+
+  const aircraftSelect = document.getElementById('aircraft');
+  const sectionsContainer = document.getElementById('sections');
+  const calculateBtn = document.getElementById('calculateBtn');
+  const resultDiv = document.getElementById('result');
+
+  // Meal inputs
+  const starterInputs = [
+    document.getElementById('starter1'),
+    document.getElementById('starter2'),
+    document.getElementById('starter3')
+  ];
+  const mainInputs = [
+    document.getElementById('main1'),
+    document.getElementById('main2'),
+    document.getElementById('main3')
+  ];
+
+  let currentSections = {};
+
+  function createNumberInput(labelText, id, min=0, defaultValue=0, smallText='') {
+    const div = document.createElement('div');
+    div.className = 'input-group';
+    const label = document.createElement('label');
+    label.htmlFor = id;
+    label.innerText = labelText;
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = min;
+    input.value = defaultValue;
+    input.id = id;
+    input.style.width = '100%';
+    if(smallText) {
+      const small = document.createElement('small');
+      small.innerText = smallText;
+      div.appendChild(small);
+    }
+    div.appendChild(label);
+    div.appendChild(input);
+    return div;
+  }
+
+  function renderSections(sectionsData) {
+    sectionsContainer.innerHTML = '';
+    currentSections = {};
+    // We’ll convert CC keys to Positions by order
+    const keys = Object.keys(sectionsData);
+
+    keys.forEach((ccKey, idx) => {
+      const seatCount = sectionsData[ccKey];
+      const posNumber = idx + 1;
+      const card = document.createElement('div');
+      card.className = 'section-card';
+      card.id = `section-${posNumber}`;
+
+      const header = document.createElement('div');
+      header.className = 'section-header';
+      header.innerText = `Position ${posNumber} (Seats: ${seatCount})`;
+      card.appendChild(header);
+
+      // Seats (readonly)
+      const seatsGroup = document.createElement('div');
+      seatsGroup.className = 'input-group';
+      const seatsLabel = document.createElement('label');
+      seatsLabel.innerText = 'Seats (fixed)';
+      const seatsInput = document.createElement('input');
+      seatsInput.type = 'number';
+      seatsInput.min = 0;
+      seatsInput.value = seatCount;
+      seatsInput.readOnly = true;
+      seatsInput.style.backgroundColor = '#d4d9ff';
+      seatsGroup.appendChild(seatsLabel);
+      seatsGroup.appendChild(seatsInput);
+      card.appendChild(seatsGroup);
+
+      // SPML input
+      const spmlGroup = createNumberInput('Special Meals (SPML)', `spml-${posNumber}`, 0, 0, 'Pre-ordered special meals not included in meal split');
+      card.appendChild(spmlGroup);
+
+      // Empty seats input
+      const emptyGroup = createNumberInput('Empty Seats', `empty-${posNumber}`, 0, 0, 'Seats not occupied for this flight');
+      card.appendChild(emptyGroup);
+
+      sectionsContainer.appendChild(card);
+
+      currentSections[posNumber] = {
+        ccKey,
+        seats: seatCount,
+        spmlInput: spmlGroup.querySelector('input'),
+        emptyInput: emptyGroup.querySelector('input'),
+        allocations: { starters: [0,0,0], mains: [0,0,0] }
+      };
+    });
+  }
+
+  // Function to allocate meals of one option (starters or mains) across positions
+  // sectionsArr: [{posNumber, occupied}]
+  // totalMeals: integer
+  function allocateMeals(sectionsArr, totalMeals) {
+    let allocations = Array(sectionsArr.length).fill(0);
+    if (totalMeals === 0) return allocations;
+
+    const totalOccupied = sectionsArr.reduce((sum,s) => sum + s.occupied, 0);
+    if(totalOccupied === 0) return allocations;
+
+    let leftover = totalMeals;
+
+    // Floor proportional allocation
+    sectionsArr.forEach((s,i) => {
+      const alloc = Math.floor((s.occupied / totalOccupied) * totalMeals);
+      allocations[i] = alloc;
+      leftover -= alloc;
+    });
+
+    // Distribute leftover one by one to busiest sections
+    let i = 0;
+    while(leftover > 0) {
+      allocations[i % allocations.length]++;
+      leftover--;
+      i++;
+    }
+
+    return allocations;
+  }
+
+  function calculateDistribution() {
+    if(!aircraftSelect.value) {
+      alert('Please select an aircraft type.');
+      return;
+    }
+
+    // Gather sections data
+    const positions = Object.keys(currentSections).map(posNumStr => {
+      const posNum = Number(posNumStr);
+      const section = currentSections[posNum];
+      const spml = parseInt(section.spmlInput.value) || 0;
+      const empty = parseInt(section.emptyInput.value) || 0;
+      const occupied = section.seats - spml - empty;
+      return {
+        posNum,
+        ccKey: section.ccKey,
+        seats: section.seats,
+        spml,
+        empty,
+        occupied: occupied < 0 ? 0 : occupied
+      };
+    });
+
+    // Get meal totals
+    const startersTotals = starterInputs.map(inp => Math.max(0,parseInt(inp.value) || 0));
+    const mainsTotals = mainInputs.map(inp => Math.max(0,parseInt(inp.value) || 0));
+
+    // Allocate starters by option
+    positions.forEach(pos => pos.starterAllocation = [0,0,0]);
+    for(let i=0; i<3; i++) {
+      const allocations = allocateMeals(positions, startersTotals[i]);
+      allocations.forEach((a, idx) => {
+        positions[idx].starterAllocation[i] = a;
+      });
+    }
+
+    // Allocate mains by option
+    positions.forEach(pos => pos.mainAllocation = [0,0,0]);
+    for(let i=0; i<3; i++) {
+      const allocations = allocateMeals(positions, mainsTotals[i]);
+      allocations.forEach((a, idx) => {
+        positions[idx].mainAllocation[i] = a;
+      });
+    }
+
+    // Show results
+    let html = `<h3>Meal Distribution per Position</h3><table style="width:100%;border-collapse:collapse;">
+      <thead style="background:#1e2a78;color:#fff;">
+        <tr>
+          <th style="padding:8px;border:1px solid #ccc;">Position</th>
+          <th style="padding:8px;border:1px solid #ccc;">Seats</th>
+          <th style="padding:8px;border:1px solid #ccc;">SPML</th>
+          <th style="padding:8px;border:1px solid #ccc;">Empty</th>
+          <th colspan="3" style="padding:8px;border:1px solid #ccc;">Starters Allocation</th>
+          <th colspan="3" style="padding:8px;border:1px solid #ccc;">Mains Allocation</th>
+        </tr>
+        <tr style="background:#3249a8;color:#d6dbff;">
+          <th></th><th></th><th></th><th></th>
+          <th style="padding:8px;border:1px solid #ccc;">Option 1</th>
+          <th style="padding:8px;border:1px solid #ccc;">Option 2</th>
+          <th style="padding:8px;border:1px solid #ccc;">Option 3</th>
+          <th style="padding:8px;border:1px solid #ccc;">Option 1</th>
+          <th style="padding:8px;border:1px solid #ccc;">Option 2</th>
+          <th style="padding:8px;border:1px solid #ccc;">Option 3</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    positions.forEach(pos => {
+      html += `<tr style="text-align:center;">
+        <td style="padding:6px;border:1px solid #ccc;">Position ${pos.posNum}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.seats}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.spml}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.empty}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.starterAllocation[0]}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.starterAllocation[1]}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.starterAllocation[2]}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.mainAllocation[0]}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.mainAllocation[1]}</td>
+        <td style="padding:6px;border:1px solid #ccc;">${pos.mainAllocation[2]}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    resultDiv.innerHTML = html;
+    resultDiv.style.display = 'block';
+  }
+
+  aircraftSelect.addEventListener('change', () => {
+    if(!aircraftSelect.value) {
+      sectionsContainer.innerHTML = '';
+      resultDiv.style.display = 'none';
+      return;
+    }
+    const data = aircraftData[aircraftSelect.value];
+    renderSections(data);
+    resultDiv.style.display = 'none';
+  });
+
+  calculateBtn.addEventListener('click', () => {
+    calculateDistribution();
+  });
+</script>
+</body>
+</html>
